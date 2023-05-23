@@ -10,6 +10,7 @@
     "db": "^4.0.1",
     "debug": "~2.6.9",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "http-errors": "~1.6.3",
     "mongo": "^0.1.0",
     "mongodb": "^5.5.0",

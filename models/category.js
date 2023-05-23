@@ -15,7 +15,3 @@ CategorySchema.virtual("url").get(function () {
 
 // Export model
 module.exports = mongoose.model("Category", CategorySchema);
-
-// Home
-// home/categories
-// home/category/id/items
