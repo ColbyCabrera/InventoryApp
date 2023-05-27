@@ -4,7 +4,7 @@ const router = express.Router();
 
 // require controller modules.
 const category_controller = require("../controllers/categoryController");
-const item_controller = require("../controllers/item_controller");
+const item_controller = require("../controllers/itemController");
 
 // CATEGORY ROUTES
 
@@ -30,7 +30,7 @@ router.get("/category/:id/update", category_controller.category_update_get);
 router.post("/category/:id/update", category_controller.category_update_post);
 
 // GET request for one category
-router.get("/category:id", category_controller.category_detail);
+router.get("/category/:id", category_controller.category_detail);
 
 // GET request for list of all categories.
 router.get("/categories", category_controller.category_list);
@@ -56,7 +56,7 @@ router.get("/item/:id/update", item_controller.item_update_get);
 router.post("/item/:id/update", item_controller.item_update_post);
 
 // GET request for one item
-router.get("/item:id", item_controller.item_detail);
+router.get("/item/:id", item_controller.item_detail);
 
 // GET request for list of all items in category.
 router.get("/category/:id/items", item_controller.category_item_list);

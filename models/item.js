@@ -26,4 +26,3 @@ ItemSchema.virtual("url").get(function () {
 
 // Export model
 module.exports = mongoose.model("Item", ItemSchema);
-
