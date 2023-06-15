@@ -4,15 +4,21 @@ const asyncHandler = require("express-async-handler");
 // Display home page
 
 exports.index = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: SITE HOME PAGE");
+  const categories = await Category.find({});
+
+  res.render("index", { title: "Inventory Application", categories: categories});
 });
 
 exports.category_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category list");
+  const categories = await Category.find({});
+
+  res.render("categories", { title: "Category List", categories: categories});
 });
 
 exports.category_detail = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category detail");
+  const category = await Category.findById(req.params.id);
+
+  res.render("category_detail", { category: category });
 });
 
 exports.category_create_get = asyncHandler(async (req, res, next) => {

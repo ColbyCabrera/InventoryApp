@@ -2,4 +2,14 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to the #[em Inventory App], a website to view and update inventory.
+
+  h1 Categories
+
+  ul
+    each category in categories
+      li 
+        a(href=category.url) #{category.name}
+  // display catergory list with links on left menu
+  // display title
+  // have left menu with crud links
