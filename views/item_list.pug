@@ -1,14 +1,13 @@
 extends layout 
 
 block content
-  h1= category.name
-  p= category.description
+  h1= title
+  
   div(class="item_list")
     ul
       each item in items
-        li
+        li 
           h2 
             a(href=item.url) #{item.name} 
             | (#{parseInt(item.price)}G)
           p #{item.description} <em>(#{item.stock} in stock)</em>
-      

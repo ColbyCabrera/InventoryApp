@@ -52,15 +52,15 @@ async function itemCreate(name, description, category, price, stock) {
 
 async function createCategories() {
   console.log("Adding categories");
-  await Promise.all([
-    categoryCreate("Instruments", "Devices that create music!"),
-    categoryCreate("Board games", "Fun tabletop games to play with friends!"),
-    categoryCreate("Cosmetics", "Change your look with these products!"),
-  ]);
+  await categoryCreate("Instruments", "Devices that create music!");
+  await categoryCreate("Board games", "Fun tabletop games to play with friends!");
+  await categoryCreate("Cosmetics", "Change your look with these products!");
+
 }
 
 async function createItems() {
   console.log("Adding items");
+  console.log(categories);
   await Promise.all([
     itemCreate("Torigonda", "A guitar like instrument", categories[0], 7999, 3),
     itemCreate("Chocolate Shadow", "A makeup product", categories[2], 2599, 6),
