@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  h1 Create Item
+  form(action="/items", method="POST")
+    label(for="name") Name:
+    input#name(type="text", name="name", required)
+
+    label(for="description") Description:
+    textarea#description(name="description", required)
+
+    label(for="category") Category:
+    select#category(name="category", required)
+      option(value="") -- Select Category --
+      each category in categories
+        option(value=category.name) #{category.name}
+
+
+    label(for="price") Price:
+    input#price(type="number", name="price", step="1", required)
+
+    label(for="stock") Stock:
+    input#stock(type="number", name="stock", required)
+
+    button(type="submit") Create

@@ -14,11 +14,13 @@ exports.category_item_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_detail = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item detail");
+  const item = await Item.findById(req.params.id).populate("category");
+  res.render("item_detail", { item: item });
 });
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item create get");
+  const categories = await Category.find({});
+  res.render("item_create", { categories: categories });
 });
 
 exports.item_create_post = asyncHandler(async (req, res, next) => {
