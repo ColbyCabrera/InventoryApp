@@ -1,12 +1,17 @@
 extends layout
 
 block content
-  h1 Create Category
-  form(action="/categories", method="POST")
+  h1= title
+  form(action="", method="POST")
     label(for="name") Name:
-    input#name(type="text", name="name", required)
+    input#name(type="text", name="name", value=(category===undefined ? "" : category.name), required)
 
     label(for="description") Description:
-    textarea#description(name="description", required)
+    textarea#description(name="description", value=(category===undefined ? "" : category.description), required)
 
     button(type="submit") Create
+  
+  if errors
+    ul
+      for error in errors
+        li!= error.msg

@@ -1,6 +1,7 @@
 const Category = require("../models/category");
 const Item = require("../models/item");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 // Display home page
 
@@ -27,12 +28,54 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.category_create_get = asyncHandler(async (req, res, next) => {
-  res.render("category_create")
+  res.render("category_create", { title: "Create Category" });
 });
 
-exports.category_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category create get");
-});
+exports.category_create_post = [
+  // Validate and sanitize the name field
+  body("name", "Category name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("description", "Category description must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  // Process request after validation and sanitization
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a genre object with escaped and trimmed data.
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors render form again with sanitized values / error messages.
+      res.render("category_create", {
+        title: "Create Category",
+        category: category,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid
+      // Check if category already exists
+      const categoryExists = await Category.findOne({ name: req.body.name }).exec();
+      if (categoryExists) {
+        // Category exists redirect to detail page
+        res.redirect(genreExists.url);
+      } else {
+        await category.save();
+        // Category saved, redirect to detail page.
+        res.redirect(category.url);
+      }
+    }
+  }),
+];
 
 exports.category_update_get = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: category update get");

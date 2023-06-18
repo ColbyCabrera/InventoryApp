@@ -5,7 +5,7 @@ const asyncHandler = require("express-async-handler");
 exports.item_list = asyncHandler(async (req, res, next) => {
   const items = await Item.find({});
 
-  res.render("item_list", { title: "All items", items: items });
+  res.render("items", { title: "All items", items: items });
 });
 
 // maybe delete this
