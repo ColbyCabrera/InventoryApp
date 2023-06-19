@@ -64,10 +64,12 @@ exports.category_create_post = [
     } else {
       // Data from form is valid
       // Check if category already exists
-      const categoryExists = await Category.findOne({ name: req.body.name }).exec();
+      const categoryExists = await Category.findOne({
+        name: req.body.name,
+      }).exec();
       if (categoryExists) {
         // Category exists redirect to detail page
-        res.redirect(genreExists.url);
+        res.redirect(categoryExists.url);
       } else {
         await category.save();
         // Category saved, redirect to detail page.
@@ -86,9 +88,40 @@ exports.category_update_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category delete get");
+  // check if category has items
+  // if items, display list of items
+  const [category, itemsInCategory] = await Promise.all([
+    Category.findById(req.params.id),
+    Item.find({ category: req.params.id }),
+  ]);
+
+  if (category === null) {
+    res.redirect("/home/categories");
+  }
+
+  res.render("category_delete", {
+    title: "Delete Category",
+    category: category,
+    category_items: itemsInCategory,
+  });
 });
 
 exports.category_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category delete post");
+  const [category, itemsInCategory] = await Promise.all([
+    Category.findById(req.params.id),
+    Item.find({ category: req.params.id }),
+  ]);
+
+  if (itemsInCategory.length > 0) {
+    // Category has items render in same way as GET route
+    res.render("category_delete", {
+      title: "Delete Category",
+      category: category,
+      category_items: itemsInCategory,
+    });
+    return;
+  } else {
+    await Category.findByIdAndDelete(req.params.id);
+    res.redirect("/home/categories");
+  }
 });

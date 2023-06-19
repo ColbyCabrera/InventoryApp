@@ -1,25 +1,37 @@
 extends layout
 
 block content
-  h1 Create Item
-  form(action="/items", method="POST")
+  h1= title
+  form(action="", method="POST")
     label(for="name") Name:
-    input#name(type="text", name="name", required)
+    input#name(type="text", name="name", value=(item===undefined ? "" : item.name), required)
 
     label(for="description") Description:
-    textarea#description(name="description", required)
+    if item===undefined
+      textarea#description(name="description", required)
+    else
+      textarea#description(name="description", required) #{item.description}
 
     label(for="category") Category:
     select#category(name="category", required)
       option(value="") -- Select Category --
       each category in categories
-        option(value=category.name) #{category.name}
+        if item
+          option(value=category._id selected=(category._id.toString()===item.category._id.toString() ? 'selected' : false) ) #{category.name}
+        else
+          option(value=category._id) #{category.name}
+
 
 
     label(for="price") Price:
-    input#price(type="number", name="price", step="1", required)
+    input#price(type="number", name="price", min="0", step="1", value=(item===undefined ? "" : item.price), required)
 
     label(for="stock") Stock:
-    input#stock(type="number", name="stock", required)
+    input#stock(type="number", name="stock", min="0", step="1", value=(item===undefined ? "" : item.stock), required)
 
     button(type="submit") Create
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg

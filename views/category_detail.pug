@@ -11,4 +11,7 @@ block content
             a(href=item.url) #{item.name} 
             | (#{parseInt(item.price)}G)
           p #{item.description} <em>(#{item.stock} in stock)</em>
-      
+  
+  hr
+  p 
+    a(href=category.url+"/delete") Delete category

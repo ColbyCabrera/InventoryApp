@@ -1,6 +1,7 @@
 const Item = require("../models/item");
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const items = await Item.find({});
@@ -20,12 +21,67 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
   const categories = await Category.find({});
-  res.render("item_create", { categories: categories });
+  res.render("item_create", { title: "Create Item", categories: categories });
 });
 
-exports.item_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item create get");
-});
+exports.item_create_post = [
+  // Validate and sanitize the name field
+  body("name", "Category name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("description", "Category description must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("category", "Category must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("stock", "Stock must not be empty").trim().isLength({ min: 1 }).escape(),
+
+  // Process request after validation and sanitization
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create item object with escaped and trimmed data.
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      price: req.body.price,
+      stock: req.body.stock,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors render form again with sanitized values / error messages.
+      const categories = await Category.find({});
+      res.render("item_create", {
+        title: "Create Item",
+        item: item,
+        categories: categories,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid
+      // Check if item already exists
+      const itemExists = await Item.findOne({
+        name: req.body.name,
+      }).exec();
+      if (itemExists) {
+        // item exists redirect to detail page
+        res.redirect(itemExists.url);
+      } else {
+        await item.save();
+        // item saved, redirect to detail page.
+        res.redirect(item.url);
+      }
+    }
+  }),
+];
 
 exports.item_update_get = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: item update get");
@@ -36,9 +92,11 @@ exports.item_update_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item delete get");
+  const item = await Item.findById(req.params.id);
+  res.render("item_delete", { item: item });
 });
 
 exports.item_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item delete post");
+  await Item.findByIdAndDelete(req.body.itemid);
+  res.redirect("/home/items");
 });
