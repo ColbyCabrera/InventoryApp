@@ -35,19 +35,17 @@ exports.category_create_post = [
   // Validate and sanitize the name field
   body("name", "Category name must contain at least 3 characters")
     .trim()
-    .isLength({ min: 3 })
-    .escape(),
+    .isLength({ min: 3 }),
   body("description", "Category description must not be empty")
     .trim()
-    .isLength({ min: 1 })
-    .escape(),
+    .isLength({ min: 1 }),
 
   // Process request after validation and sanitization
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
-    // Create a genre object with escaped and trimmed data.
+    // Create a category object with escaped and trimmed data.
     const category = new Category({
       name: req.body.name,
       description: req.body.description,
@@ -80,12 +78,56 @@ exports.category_create_post = [
 ];
 
 exports.category_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category update get");
+  const category = await Category.findById(req.params.id);
+
+  res.render("category_create", {
+    title: "Update category",
+    category: category,
+  });
 });
 
-exports.category_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: category update post");
-});
+exports.category_update_post = [
+  // Validate and sanitize the name field
+  body("name", "Category name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 }),
+  body("description", "Category description must not be empty")
+    .trim()
+    .isLength({ min: 1 }),
+
+  // Process request after validation and sanitization
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a category object with escaped and trimmed data.
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors, render form again with sanitized values / error messages.
+      res.render("category_create", {
+        title: "Create Category",
+        category: category,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid
+      // Check if category already exists
+      const updatedCategory = await Category.findByIdAndUpdate(
+        req.params.id,
+        category,
+        {}
+      );
+      // Category saved, redirect to detail page.
+      res.redirect(updatedCategory.url);
+    }
+  }),
+];
 
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
   // check if category has items

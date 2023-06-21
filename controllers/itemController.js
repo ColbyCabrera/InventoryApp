@@ -28,16 +28,11 @@ exports.item_create_post = [
   // Validate and sanitize the name field
   body("name", "Category name must contain at least 3 characters")
     .trim()
-    .isLength({ min: 3 })
-    .escape(),
+    .isLength({ min: 3 }),
   body("description", "Category description must not be empty")
     .trim()
-    .isLength({ min: 1 })
-    .escape(),
-  body("category", "Category must not be empty")
-    .trim()
-    .isLength({ min: 1 })
-    .escape(),
+    .isLength({ min: 1 }),
+  body("category", "Category must not be empty").trim().isLength({ min: 1 }),
   body("price", "Price must not be empty").trim().isLength({ min: 1 }).escape(),
   body("stock", "Stock must not be empty").trim().isLength({ min: 1 }).escape(),
 
@@ -84,12 +79,60 @@ exports.item_create_post = [
 ];
 
 exports.item_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item update get");
+  const item = await Item.findById(req.params.id);
+  const categories = await Category.find({});
+
+  res.render("item_create", {
+    title: "Update item",
+    item: item,
+    categories: categories,
+  });
 });
 
-exports.item_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: item update post");
-});
+exports.item_update_post = [
+  // Validate and sanitize the name field
+  body("name", "Category name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 }),
+  body("description", "Category description must not be empty")
+    .trim()
+    .isLength({ min: 1 }),
+  body("category", "Category must not be empty").trim().isLength({ min: 1 }),
+  body("price", "Price must not be empty").trim().isLength({ min: 1 }).escape(),
+  body("stock", "Stock must not be empty").trim().isLength({ min: 1 }).escape(),
+
+  // Process request after validation and sanitization
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create item object with escaped and trimmed data.
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      price: req.body.price,
+      stock: req.body.stock,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors, render form again with sanitized values / error messages.
+      const categories = await Category.find({});
+      res.render("item_create", {
+        title: "Create Item",
+        item: item,
+        categories: categories,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid
+      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {})
+      res.redirect(updatedItem.url);
+    }
+  }),
+];
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
   const item = await Item.findById(req.params.id);
