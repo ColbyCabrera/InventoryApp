@@ -8,7 +8,7 @@ const ItemSchema = new Schema({
   category: { type: Schema.Types.ObjectId, ref: "Category" },
   price: { type: Number, required: true, get: getPrice, set: setPrice },
   stock: { type: Number, required: true },
-  // image maybe?
+  image: { data: Buffer, contentType: String },
 });
 
 function getPrice(num) {

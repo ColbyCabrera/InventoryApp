@@ -22,7 +22,7 @@ exports.category_list = asyncHandler(async (req, res, next) => {
 
 exports.category_detail = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.params.id);
-  const items = await Item.find({ category: req.params.id });
+  const items = await Item.find({ category: req.params.id }, { image: 0 });
 
   res.render("category_detail", { category: category, items: items });
 });

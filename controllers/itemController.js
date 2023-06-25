@@ -2,9 +2,12 @@ const Item = require("../models/item");
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const fs = require("fs");
 
 exports.item_list = asyncHandler(async (req, res, next) => {
-  const items = await Item.find({});
+  const items = await Item.find({}, { image: 0 });
+
+  console.log(items);
 
   res.render("items", { title: "All items", items: items });
 });
@@ -40,15 +43,35 @@ exports.item_create_post = [
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
+    let item;
 
-    // Create item object with escaped and trimmed data.
-    const item = new Item({
-      name: req.body.name,
-      description: req.body.description,
-      category: req.body.category,
-      price: req.body.price,
-      stock: req.body.stock,
-    });
+    // Process image data
+    if (req.file) {
+      let img = fs.readFileSync(req.file.path);
+      let encode_img = img.toString("base64");
+      let final_img = {
+        contentType: req.file.mimetype,
+        data: new Buffer.from(encode_img, "base64"),
+      };
+
+      // Create item object with escaped and trimmed data.
+      item = new Item({
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+        image: final_img,
+      });
+    } else {
+      item = new Item({
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+      });
+    }
 
     if (!errors.isEmpty()) {
       // There are errors render form again with sanitized values / error messages.
@@ -79,7 +102,7 @@ exports.item_create_post = [
 ];
 
 exports.item_update_get = asyncHandler(async (req, res, next) => {
-  const item = await Item.findById(req.params.id);
+  const item = await Item.findById(req.params.id, { image: 0 });
   const categories = await Category.find({});
 
   res.render("item_create", {
@@ -128,14 +151,14 @@ exports.item_update_post = [
       return;
     } else {
       // Data from form is valid
-      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {})
+      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
       res.redirect(updatedItem.url);
     }
   }),
 ];
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
-  const item = await Item.findById(req.params.id);
+  const item = await Item.findById(req.params.id, { image: 0 });
   res.render("item_delete", { item: item });
 });
 

@@ -2,7 +2,7 @@ extends layout
 
 block content
   h1= title
-  form(action="", method="POST")
+  form(action="", method="POST", enctype="multipart/form-data")
     label(for="name") Name:
     input#name(type="text", name="name", value=(item===undefined ? "" : item.name), required)
 
@@ -28,6 +28,9 @@ block content
 
     label(for="stock") Stock:
     input#stock(type="number", name="stock", min="0", step="1", value=(item===undefined ? "" : item.stock), required)
+
+    label(for="image") Image (optional): 
+    input#image(type="file", name="image")
 
     button(type="submit") Submit
 

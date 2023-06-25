@@ -78,6 +78,13 @@ em {
   padding-top: 0.8rem;
 }
 
+img {
+  height: 25rem;
+  width: 25rem;
+  object-fit: cover;
+  border-radius: 2rem;
+}
+
 form {
   margin-top: 2rem;
   display: flex;

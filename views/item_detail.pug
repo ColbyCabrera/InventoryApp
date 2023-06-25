@@ -10,7 +10,8 @@ block content
     a(href=item.category.url) #{item.category.name}
   p <em>Number in stock: </em> #{item.stock}
   p <em>Price: </em> #{parseInt(item.price)}G
-
+  if item.image.data
+    img(src=`data:image/${item.image.contentType};base64,${item.image.data.toString('base64')}`)
   hr
   p 
     a(href=item.url+"/update") Update item
