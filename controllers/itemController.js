@@ -24,6 +24,7 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
   const categories = await Category.find({});
+
   res.render("item_create", { title: "Create Item", categories: categories });
 });
 
@@ -105,6 +106,8 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
   const item = await Item.findById(req.params.id, { image: 0 });
   const categories = await Category.find({});
 
+  console.log(item.category._id);
+
   res.render("item_create", {
     title: "Update item",
     item: item,
@@ -129,21 +132,40 @@ exports.item_update_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
-    // Create item object with escaped and trimmed data.
-    const item = new Item({
-      name: req.body.name,
-      description: req.body.description,
-      category: req.body.category,
-      price: req.body.price,
-      stock: req.body.stock,
-      _id: req.params.id,
-    });
+    if (req.file) {
+      let img = fs.readFileSync(req.file.path);
+      let encode_img = img.toString("base64");
+      let final_img = {
+        contentType: req.file.mimetype,
+        data: new Buffer.from(encode_img, "base64"),
+      };
+
+      // Create item object with escaped and trimmed data.
+      item = new Item({
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+        image: final_img,
+        _id: req.params.id,
+      });
+    } else {
+      item = new Item({
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+        _id: req.params.id,
+      });
+    }
 
     if (!errors.isEmpty()) {
       // There are errors, render form again with sanitized values / error messages.
       const categories = await Category.find({});
       res.render("item_create", {
-        title: "Create Item",
+        title: "Update Item",
         item: item,
         categories: categories,
         errors: errors.array(),
@@ -154,6 +176,9 @@ exports.item_update_post = [
       const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
       res.redirect(updatedItem.url);
     }
+
+    // Clear item variable
+    item = undefined;
   }),
 ];
 
