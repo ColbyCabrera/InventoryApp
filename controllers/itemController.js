@@ -132,6 +132,8 @@ exports.item_update_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
+    console.log(req.body.price);
+
     if (req.file) {
       let img = fs.readFileSync(req.file.path);
       let encode_img = img.toString("base64");

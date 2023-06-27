@@ -6,17 +6,17 @@ const ItemSchema = new Schema({
   name: { type: String, required: true, maxLenth: 100 },
   description: { type: String, required: true },
   category: { type: Schema.Types.ObjectId, ref: "Category" },
-  price: { type: Number, required: true, get: getPrice, set: setPrice },
+  price: { type: Number, required: true },
   stock: { type: Number, required: true },
   image: { data: Buffer, contentType: String },
 });
 
 function getPrice(num) {
-  return (num / 100).toFixed(2);
+  return parseInt(num);
 }
 
 function setPrice(num) {
-  return num * 100;
+  return num;
 }
 
 // Virtual for item URL

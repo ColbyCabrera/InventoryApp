@@ -24,7 +24,7 @@ block content
 
 
     label(for="price") Price:
-    input#price(type="number", name="price", min="0", step="1", value=(item===undefined ? "" : item.price), required)
+    input#price(type="number", name="price", min="0", step="1", value=(item===undefined ? "" : parseInt(item.price)), required)
 
     label(for="stock") Stock:
     input#stock(type="number", name="stock", min="0", step="1", value=(item===undefined ? "" : item.stock), required)
