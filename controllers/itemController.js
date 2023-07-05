@@ -3,12 +3,11 @@ const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const fs = require("fs");
+const session = require("express-session");
+const passport = require("passport");
 
 exports.item_list = asyncHandler(async (req, res, next) => {
   const items = await Item.find({}, { image: 0 });
-
-  console.log(items);
-
   res.render("items", { title: "All items", items: items });
 });
 
@@ -25,7 +24,10 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
 exports.item_create_get = asyncHandler(async (req, res, next) => {
   const categories = await Category.find({});
 
-  res.render("item_create", { title: "Create Item", categories: categories });
+  res.render("item_create", {
+    title: "Create Item",
+    categories: categories,
+  });
 });
 
 exports.item_create_post = [
@@ -106,12 +108,11 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
   const item = await Item.findById(req.params.id, { image: 0 });
   const categories = await Category.find({});
 
-  console.log(item.category._id);
-
   res.render("item_create", {
     title: "Update item",
     item: item,
     categories: categories,
+    user: req.user,
   });
 });
 
@@ -131,8 +132,6 @@ exports.item_update_post = [
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-
-    console.log(req.body.price);
 
     if (req.file) {
       let img = fs.readFileSync(req.file.path);
@@ -186,7 +185,7 @@ exports.item_update_post = [
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
   const item = await Item.findById(req.params.id, { image: 0 });
-  res.render("item_delete", { item: item });
+  res.render("item_delete", { item: item, user: req.user });
 });
 
 exports.item_delete_post = asyncHandler(async (req, res, next) => {

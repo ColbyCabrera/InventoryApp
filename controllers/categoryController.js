@@ -1,7 +1,10 @@
 const Category = require("../models/category");
 const Item = require("../models/item");
+const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const session = require("express-session");
+const passport = require("passport");
 
 // Display home page
 
@@ -11,12 +14,47 @@ exports.index = asyncHandler(async (req, res, next) => {
   res.render("index", {
     title: "Inventory Application",
     categories: categories,
+    user: req.user,
+  });
+});
+
+exports.category_sign_up_get = asyncHandler(async (req, res, next) => {
+  res.render("sign_up", { title: "Sign Up" });
+});
+
+exports.category_sign_up_post = asyncHandler(async (req, res, next) => {
+  try {
+    const user = new User({
+      username: req.body.username,
+      password: req.body.password,
+    });
+    const result = await user.save();
+    res.redirect("/");
+  } catch (err) {
+    return next(err);
+  }
+});
+
+exports.category_sign_in_get = asyncHandler(async (req, res, next) => {
+  res.render("sign_up", { title: "Sign In" });
+});
+
+exports.category_sign_in_post = passport.authenticate("local", {
+  successRedirect: "/",
+  failureRedirect: "/",
+});
+
+exports.category_logout_get = asyncHandler(async (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
   });
 });
 
 exports.category_list = asyncHandler(async (req, res, next) => {
   const categories = await Category.find({});
-
   res.render("categories", { title: "Category List", categories: categories });
 });
 
@@ -28,7 +66,8 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.category_create_get = asyncHandler(async (req, res, next) => {
-  res.render("category_create", { title: "Create Category" });
+  console.log(req.user);
+  res.render("category_create", { title: "Create Category", user: req.user });
 });
 
 exports.category_create_post = [
@@ -83,6 +122,7 @@ exports.category_update_get = asyncHandler(async (req, res, next) => {
   res.render("category_create", {
     title: "Update category",
     category: category,
+    user: req.user,
   });
 });
 
@@ -145,6 +185,7 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
     title: "Delete Category",
     category: category,
     category_items: itemsInCategory,
+    user: req.user
   });
 });
 

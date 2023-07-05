@@ -2,17 +2,20 @@ extends layout
 
 block content
   h1= title
-  form(action="", method="POST")
-    label(for="name") Name:
-    input#name(type="text", name="name", value=(category===undefined ? "" : category.name), required)
+  if user || title == "Create Category"
+    form(action="", method="POST")
+      label(for="name") Name:
+      input#name(type="text", name="name", value=(category===undefined ? "" : category.name), required)
 
-    label(for="description") Description:
-    if category===undefined
-      textarea#description(name="description", required)
-    else
-      textarea#description(name="description", required) #{category.description}
+      label(for="description") Description:
+      if category===undefined
+        textarea#description(name="description", required)
+      else
+        textarea#description(name="description", required) #{category.description}
 
-    button(type="submit") Submit
+      button(type="submit") Submit
+  else 
+    p Please <a href="/home/sign-in"> log in </a> first
   
   if errors
     ul

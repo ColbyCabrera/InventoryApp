@@ -23,6 +23,21 @@ const item_controller = require("../controllers/itemController");
 // GET home page
 router.get("/", category_controller.index);
 
+// GET sign up form
+router.get("/sign-up", category_controller.category_sign_up_get);
+
+// POST request for signing up
+router.post("/sign-up", category_controller.category_sign_up_post);
+
+// GET sign-in-form
+router.get("/sign-in", category_controller.category_sign_in_get);
+
+// POST sign-in-form
+router.post("/sign-in", category_controller.category_sign_in_post);
+
+// Log out
+router.get("/logout", category_controller.category_logout_get);
+
 // GET request for creating a Category. NOTE This must come before routes that display Category (uses id).
 router.get("/category/create", category_controller.category_create_get);
 

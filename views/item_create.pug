@@ -2,38 +2,40 @@ extends layout
 
 block content
   h1= title
-  form(action="", method="POST", enctype="multipart/form-data")
-    label(for="name") Name:
-    input#name(type="text", name="name", value=(item===undefined ? "" : item.name), required)
+  if user || title == "Create Item"
+    form(action="", method="POST", enctype="multipart/form-data")
+      label(for="name") Name:
+      input#name(type="text", name="name", value=(item===undefined ? "" : item.name), required)
 
-    label(for="description") Description:
-    if item===undefined
-      textarea#description(name="description", required)
-    else
-      textarea#description(name="description", required) #{item.description}
+      label(for="description") Description:
+      if item===undefined
+        textarea#description(name="description", required)
+      else
+        textarea#description(name="description", required) #{item.description}
 
-    label(for="category") Category:
-    select#category(name="category", required)
-      option(value="") -- Select Category --
-      each category in categories
-        if item
-          option(value=category._id selected=(category._id.toString()===item.category._id.toString() ? 'selected' : false) ) #{category.name}
-        else
-          option(value=category._id) #{category.name}
+      label(for="category") Category:
+      select#category(name="category", required)
+        option(value="") -- Select Category --
+        each category in categories
+          if item
+            option(value=category._id selected=(category._id.toString()===item.category._id.toString() ? 'selected' : false) ) #{category.name}
+          else
+            option(value=category._id) #{category.name}
 
 
 
-    label(for="price") Price:
-    input#price(type="number", name="price", min="0", step="1", value=(item===undefined ? "" : parseInt(item.price)), required)
+      label(for="price") Price:
+      input#price(type="number", name="price", min="0", step="1", value=(item===undefined ? "" : parseInt(item.price)), required)
 
-    label(for="stock") Stock:
-    input#stock(type="number", name="stock", min="0", step="1", value=(item===undefined ? "" : item.stock), required)
+      label(for="stock") Stock:
+      input#stock(type="number", name="stock", min="0", step="1", value=(item===undefined ? "" : item.stock), required)
 
-    label(for="image") Image (optional): 
-    input#image(type="file", name="image")
+      label(for="image") Image (optional): 
+      input#image(type="file", name="image")
 
-    button(type="submit") Submit
-
+      button(type="submit") Submit
+  else
+    p Please <a href="/home/sign-in"> log in </a> first
   if errors
     ul
       for error in errors

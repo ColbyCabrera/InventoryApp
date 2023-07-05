@@ -1,26 +1,28 @@
 extends layout
 
 block content
-  h1 Category: #{category.name}
+  h1 Delete Category: #{category.name}
   p= category.description
 
   hr
- 
-  if category_items.length
-    p #[strong Delete the following items before attempting to delete this category.]
-    div(style='margin-left:20px;margin-top:20px')
-      h3 Items
-      dl
-        each item in category_items
-          dt 
-            a(href=item.url) #{item.name}
-            p= item.description
+  if user
+    if category_items.length
+      p #[strong Delete the following items before attempting to delete this category.]
+      div(style='margin-left:20px;margin-top:20px')
+        h3 Items
+        dl
+          each item in category_items
+            dt 
+              a(href=item.url) #{item.name}
+              p= item.description
         
-  else
-    p <em>Do you really want to delete this category?</em>
+    else
+      p <em>Do you really want to delete this category?</em>
 
-    form(action='' method='POST')
-      div.form-group
-        input#categoryid(type='hidden', name="categoryid", value=category._id,required='true')
+      form(action='' method='POST')
+        div.form-group
+          input#categoryid(type='hidden', name="categoryid", value=category._id,required='true')
     
-      button(type='submit') Delete
+        button(type='submit') Delete
+  else
+    p Please <a href="/home/sign-in"> log in </a> first

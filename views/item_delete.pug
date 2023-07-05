@@ -1,14 +1,17 @@
 extends layout
 
 block content
-  h1 Item: #{item.name}
+  h1 Delete Item: #{item.name}
   p= item.description
 
   hr
-  p <em>Do you really want to delete this item?</em>
+  if user
+    p <em>Do you really want to delete this item?</em>
 
-  form(action='' method='POST')
-    div.form-group
-      input#itemid(type='hidden', name="itemid", value=item._id,required='true')
-    
-    button(type='submit') Delete
+    form(action='' method='POST')
+      div.form-group
+        input#itemid(type='hidden', name="itemid", value=item._id,required='true')
+      
+      button(type='submit') Delete
+  else
+    p Please <a href="/home/sign-in"> log in </a> first

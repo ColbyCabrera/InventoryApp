@@ -1,25 +1,33 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const User = require("./models/user");
 
-var indexRouter = require("./routes/index");
-var homeRouter = require("./routes/home");
-var usersRouter = require("./routes/users");
+const indexRouter = require("./routes/index");
+const homeRouter = require("./routes/home");
+const usersRouter = require("./routes/users");
 
-var app = express();
+const app = express();
 
 // Set up mongoose connection
 const mongoose = require("mongoose");
+const { error } = require("console");
 mongoose.set("strictQuery", false);
 const mongoDB =
   "mongodb+srv://admin:test@cluster0.00x8iz9.mongodb.net/?retryWrites=true&w=majority";
 
 main().catch((err) => console.log(err));
 async function main() {
-  await mongoose.connect(mongoDB);
+  await mongoose.connect(mongoDB, { useUnifiedTopology: true, useNewUrlParser: true });
 }
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "mongo connection error"));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -27,6 +35,38 @@ app.set("view engine", "pug");
 
 app.use(logger("dev"));
 app.use(express.json());
+app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
+passport.use(
+  new LocalStrategy(async(username, password, done) => {
+    try {
+      const user = await User.findOne({ username: username });
+      if (!user) {
+        return done(null, false, { message: "Incorrect username" });
+      };
+      if (user.password !== password) {
+        return done(null, false, { message: "Incorrect password" });
+      };
+      return done(null, user);
+    } catch (err) {
+      return done(err);
+    };
+  })
+);
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async function(id, done) {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch(err) {
+    done(err);
+  };
+});
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
