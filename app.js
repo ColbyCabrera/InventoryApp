@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const bcrypt = require("bcryptjs");
 const User = require("./models/user");
+require("dotenv").config();
 
 const indexRouter = require("./routes/index");
 const homeRouter = require("./routes/home");
@@ -19,8 +20,7 @@ const app = express();
 const mongoose = require("mongoose");
 const { error } = require("console");
 mongoose.set("strictQuery", false);
-const mongoDB =
-  "mongodb+srv://admin:test@cluster0.00x8iz9.mongodb.net/?retryWrites=true&w=majority";
+const mongoDB = process.env.DB_STRING;
 
 main().catch((err) => console.log(err));
 async function main() {

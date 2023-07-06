@@ -35,7 +35,7 @@ exports.category_sign_up_post = asyncHandler(async (req, res, next) => {
       });
       const result = await user.save();
     });
-    
+
     res.redirect("/");
   } catch (err) {
     return next(err);
@@ -73,7 +73,6 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.category_create_get = asyncHandler(async (req, res, next) => {
-  console.log(req.user);
   res.render("category_create", { title: "Create Category", user: req.user });
 });
 
@@ -192,7 +191,7 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
     title: "Delete Category",
     category: category,
     category_items: itemsInCategory,
-    user: req.user
+    user: req.user,
   });
 });
 
